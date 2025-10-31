@@ -1,27 +1,148 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Die Area Prediction</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OICDB — Modeling Integrated Circuits</title>
+  <meta name="description" content="OICDB project website: dataset and interactive prediction demo for modeling integrated circuits." />
   <style>
+    :root {
+      --blue-900: #0a2a66; /* dark navy blue */
+      --blue-800: #103a8c; /* dark blue for hover */
+      --accent: #4fb3ff;
+      --text: #111827;    /* gray-900 */
+      --muted: #6b7280;   /* gray-500 */
+      --bg: #f9fafb;      /* gray-50 */
+      --card: #ffffff;
+      --ring: rgba(79, 179, 255, 0.35);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
     body {
-      font-family: Arial, sans-serif;
-      margin: 40px;
-      background-color: #f9f9f9;
-      color: #333;
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.5;
     }
-    h1 {
-      color: #004aad;
+
+    /* Top banner */
+    .banner {
+      background: linear-gradient(180deg, var(--blue-900) 0%, #0b317a 100%);
+      color: #fff;
+      padding: 28px 20px;
     }
-    p {
-      max-width: 700px;
-      line-height: 1.6;
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 16px; }
+
+    /* Header with nav */
+    .header { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: #fff; }
+    .brand .logo {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: rgba(255,255,255,0.12);
+      display: grid; place-items: center;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.2);
+      font-weight: 700;
     }
+    .brand-title {
+      font-weight: 700; font-size: 18px; letter-spacing: 0.2px;
+    }
+
+    .nav { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .tab {
+      color: #e5efff; text-decoration: none; padding: 8px 12px; border-radius: 10px;
+      transition: background 0.2s ease, color 0.2s ease, transform 0.1s ease;
+      font-weight: 600; font-size: 14px; letter-spacing: 0.2px;
+    }
+    .tab:hover { background: rgba(255,255,255,0.12); color: #fff; }
+    .tab.primary { background: #ffffff10; border: 1px solid rgba(255,255,255,0.18); }
+
+    /* Hero */
+    .hero { padding: 28px 0 16px; }
+    .title {
+      margin: 0 0 6px 0; font-size: 28px; font-weight: 800; letter-spacing: 0.3px;
+    }
+    .subtitle { margin: 0; color: #eef3ff; max-width: 780px; }
+
+    /* Card row */
+    .row { display: grid; grid-template-columns: 1fr; gap: 18px; margin-top: 18px; }
+    @media (min-width: 800px) { .row { grid-template-columns: 1fr 1fr; } }
+
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: 0 10px 30px rgba(16, 58, 140, 0.15);
+      border: 1px solid rgba(16, 58, 140, 0.08);
+    }
+    .card h3 { margin: 0 0 6px 0; font-size: 18px; }
+    .card p { margin: 0 0 12px 0; color: var(--muted); }
+
+    .button {
+      display: inline-block; text-decoration: none; font-weight: 700; padding: 10px 14px; border-radius: 12px;
+      border: 1px solid rgba(16,58,140,0.24);
+      background: #fff; color: var(--blue-900);
+      box-shadow: 0 6px 16px rgba(16, 58, 140, 0.12);
+      transition: transform 0.06s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+    .button:hover { transform: translateY(-1px); box-shadow: 0 10px 20px rgba(16, 58, 140, 0.16); }
+    .button.primary { background: var(--blue-900); color: #fff; border-color: transparent; }
+    .button.primary:hover { background: var(--blue-800); }
+
+    /* Footer */
+    footer { text-align: center; color: #6b7280; font-size: 14px; padding: 26px 12px; }
+    footer a { color: var(--blue-800); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
-  <h1>Die Area Prediction</h1>
-  <p>Welcome! This page presents our project on predicting die area using regression models.</p>
-  <p>More details and results will be added soon.</p>
+  <!-- Top banner with navigation -->
+  <header class="banner">
+    <div class="container">
+      <div class="header">
+        <a class="brand" href="./">
+          <div class="logo" aria-hidden="true">IC</div>
+          <span class="brand-title">OICDB</span>
+        </a>
+        <nav class="nav" aria-label="Navigation principale">
+          <!-- Tabs requested -->
+          <a class="tab" href="./dataset.html">OICDB dataset</a>
+          <a class="tab primary" href="./predict.html">Make your own prediction</a>
+        </nav>
+      </div>
+      <section class="hero" aria-labelledby="hero-title">
+        <h1 id="hero-title" class="title">OICDB  Modeling Integrated Circuits</h1>
+        <p class="subtitle">Un projet académique autour de l'estimation des surfaces de dies et de la modélisation de circuits intégrés. Accédez au jeu de données OICDB et testez un démonstrateur de prédiction en ligne.</p>
+      </section>
+    </div>
+  </header>
+
+  <!-- Content cards -->
+  <main class="container" style="margin-top: 18px;">
+    <div class="row">
+      <article class="card">
+        <h3>OICDB dataset</h3>
+        <p>Documentation du dataset, schémas des variables, format des fichiers, licence et guide de citation. Inclut des exemples de chargement en Python.</p>
+        <a class="button" href="./dataset.html" aria-label="Aller vers OICDB dataset">Explorer le dataset</a>
+      </article>
+
+      <article class="card">
+        <h3>Make your own prediction</h3>
+        <p>Interface web simple pour téléverser vos features et obtenir une prédiction de la surface du die, avec les métriques du modèle et une explication globale.</p>
+        <a class="button primary" href="./predict.html" aria-label="Aller vers make your own prediction">Lancer la démo</a>
+      </article>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      © <span id="year"></span> OICDB. Projet universitaire. <a href="https://github.com/anncollin/DieAreaPrediction" target="_blank" rel="noopener">Code source</a>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
 </body>
 </html>
