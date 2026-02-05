@@ -1,73 +1,144 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>OICDB — Modeling Integrated Circuits</title>
-  <meta name="description" content="OICDB project website: dataset and interactive prediction demo for modeling integrated circuits." />
+  <meta name="description" content="OICDB project website: dataset and resources for modeling integrated circuits." />
+
   <style>
     :root {
-      --blue-900: #0a2a66; /* dark navy blue */
-      --blue-800: #103a8c; /* dark blue for hover */
-      --accent: #4fb3ff;
-      --text: #111827;    /* gray-900 */
-      --muted: #6b7280;   /* gray-500 */
-      --bg: #f9fafb;      /* gray-50 */
+      --blue-900: #0a2a66;
+      --blue-800: #103a8c;
+      --bg: #f9fafb;
+      --text: #111827;
+      --muted: #6b7280;
       --card: #ffffff;
-      --ring: rgba(79, 179, 255, 0.35);
     }
 
     * { box-sizing: border-box; }
-    html, body { height: 100%; }
-    body {
+    html, body {
+      height: 100%;
       margin: 0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial;
       color: var(--text);
       background: var(--bg);
       line-height: 1.5;
     }
 
-    /* Top banner */
+    /* Banner */
     .banner {
       background: linear-gradient(180deg, var(--blue-900) 0%, #0b317a 100%);
       color: #fff;
-      padding: 28px 20px;
-    }
-    .container { max-width: 1100px; margin: 0 auto; padding: 0 16px; }
-
-    /* Header with nav */
-    .header { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-    .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: #fff; }
-    .brand .logo {
-      width: 40px; height: 40px; border-radius: 10px;
-      background: rgba(255,255,255,0.12);
-      display: grid; place-items: center;
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.2);
-      font-weight: 700;
-    }
-    .brand-title {
-      font-weight: 700; font-size: 18px; letter-spacing: 0.2px;
+      padding: 40px 20px;
     }
 
-    .nav { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-    .tab {
-      color: #e5efff; text-decoration: none; padding: 8px 12px; border-radius: 10px;
-      transition: background 0.2s ease, color 0.2s ease, transform 0.1s ease;
-      font-weight: 600; font-size: 14px; letter-spacing: 0.2px;
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 16px;
     }
-    .tab:hover { background: rgba(255,255,255,0.12); color: #fff; }
-    .tab.primary { background: #ffffff10; border: 1px solid rgba(255,255,255,0.18); }
 
-    /* Hero */
-    .hero { padding: 28px 0 16px; }
+    /* Header top: title + logo aligned */
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 4px;
+    }
+
     .title {
-      margin: 0 0 6px 0; font-size: 28px; font-weight: 800; letter-spacing: 0.3px;
+      margin: 0 0 10px 0;
+      font-size: 32px;
+      font-weight: 800;
     }
-    .subtitle { margin: 0; color: #eef3ff; max-width: 780px; }
 
-    /* Card row */
-    .row { display: grid; grid-template-columns: 1fr; gap: 18px; margin-top: 18px; }
-    @media (min-width: 800px) { .row { grid-template-columns: 1fr 1fr; } }
+    /* Author section */
+    .authors {
+      margin-top: -2px;
+      margin-bottom: 6px;
+      color: #e5ecff;
+      font-size: 15px;
+      line-height: 1.3;
+    }
+
+    /* UCLouvain logo aligned to right */
+    .uclouvain-logo img {
+      height: 55px;
+      background: #fff;
+      border-radius: 6px;
+      padding: 4px 8px;
+      box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Subtitle */
+    .subtitle {
+      margin: 40px 0 30px 0;
+      color: #eef3ff;
+      max-width: 1100px;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    /* Download bar (inside banner) */
+    .download-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    /* Light transparent gray buttons */
+    .download-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 15px;
+      padding: 10px 20px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      transition: transform 0.1s ease, background 0.2s ease, color 0.2s ease;
+    }
+
+    .download-button:hover {
+      transform: translateY(-2px);
+      background: rgba(255, 255, 255, 0.25);
+      color: #fff;
+    }
+
+    .download-button svg.icon {
+      width: 18px;
+      height: 18px;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+
+    .download-button i {
+      margin-right: 8px;  /* Adds horizontal spacing between icon and text */
+      font-size: 16px;    /* Optional: ensures consistent icon size */
+    }
+
+
+    .smallcaps {
+      font-variant: small-caps;
+    }
+
+    /* Cards for content */
+    .row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+      margin-top: 30px;
+    }
 
     .card {
       background: var(--card);
@@ -76,68 +147,235 @@
       box-shadow: 0 10px 30px rgba(16, 58, 140, 0.15);
       border: 1px solid rgba(16, 58, 140, 0.08);
     }
-    .card h3 { margin: 0 0 6px 0; font-size: 18px; }
-    .card p { margin: 0 0 12px 0; color: var(--muted); }
 
-    .button {
-      display: inline-block; text-decoration: none; font-weight: 700; padding: 10px 14px; border-radius: 12px;
-      border: 1px solid rgba(16,58,140,0.24);
-      background: #fff; color: var(--blue-900);
-      box-shadow: 0 6px 16px rgba(16, 58, 140, 0.12);
-      transition: transform 0.06s ease, box-shadow 0.2s ease, background 0.2s ease;
+    .card h3 {
+      margin: 0 0 6px 0;
+      font-size: 18px;
     }
-    .button:hover { transform: translateY(-1px); box-shadow: 0 10px 20px rgba(16, 58, 140, 0.16); }
-    .button.primary { background: var(--blue-900); color: #fff; border-color: transparent; }
-    .button.primary:hover { background: var(--blue-800); }
+
+    .card p {
+      margin: 0 0 12px 0;
+      color: var(--muted);
+    }
 
     /* Footer */
-    footer { text-align: center; color: #6b7280; font-size: 14px; padding: 26px 12px; }
-    footer a { color: var(--blue-800); text-decoration: none; }
-    footer a:hover { text-decoration: underline; }
+    footer {
+      text-align: center;
+      color: #6b7280;
+      font-size: 14px;
+      padding: 26px 12px;
+    }
+
+    footer a {
+      color: var(--blue-800);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
+
 <body>
-  <!-- Top banner with navigation -->
+  <!-- HEADER -->
   <header class="banner">
     <div class="container">
-      <div class="header">
-        <a class="brand" href="./">
-          <div class="logo" aria-hidden="true">IC</div>
-          <span class="brand-title">OICDB</span>
-        </a>
-        <nav class="nav" aria-label="Navigation principale">
-          <!-- Tabs requested -->
-          <a class="tab" href="./dataset.html">OICDB dataset</a>
-          <a class="tab primary" href="./predict.html">Make your own prediction</a>
-        </nav>
+
+      <!-- Top section: Title (left) + UCLouvain logo (right) -->
+      <div class="header-top">
+        <h1 class="title">OICDB — Modeling Integrated Circuits</h1>
+        <div class="uclouvain-logo">
+          <img src="assets/imgs/UCLouvain.png" alt="UCLouvain logo" />
+        </div>
       </div>
-      <section class="hero" aria-labelledby="hero-title">
-        <h1 id="hero-title" class="title">OICDB  Modeling Integrated Circuits</h1>
-        <p class="subtitle">Un projet académique autour de l'estimation des surfaces de dies et de la modélisation de circuits intégrés. Accédez au jeu de données OICDB et testez un démonstrateur de prédiction en ligne.</p>
-      </section>
-    </div>
+
+      <!-- Author section -->
+      <div class="authors">
+        <p>
+          Augustin <span class="smallcaps">Wattiez</span>, 
+          Anne-Sophie <span class="smallcaps">Collin</span>, 
+          Robin <span class="smallcaps">Dethienne</span>, 
+          Tomasz <span class="smallcaps">Rola</span>, 
+          Marina <span class="smallcaps">Proske</span>, 
+          and David <span class="smallcaps">Bol</span>
+        </p>
+      </div>
+
+      <!-- Subtitle -->
+      <p class="subtitle">
+        We introduce OICDB, an open dataset for integrated circuit modeling dedicated to life cycle analysis. 
+        Explore OICDB and use our model to predict the die area of a new device.
+      </p>
+
+      <!-- Download buttons -->
+      <div class="download-bar">
+        <a class="download-button" href="assets/paper/OICDB_paper.pdf" download>
+          <i class="fa-regular fa-file"></i> Paper
+        </a>
+        <a class="download-button" href="https://github.com/anncollin/DieAreaPrediction" target="_blank">
+          <i class="fa-brands fa-github"></i> Code
+        </a>
+        <a class="download-button" href="assets/dataset/OICDB_dataset.xlsx" download>
+          <i class="fa-solid fa-database"></i> Dataset
+        </a>
+      </div>
+
   </header>
 
-  <!-- Content cards -->
-  <main class="container" style="margin-top: 18px;">
+  <!-- MAIN CONTENT -->
+  <main class="container">
     <div class="row">
       <article class="card">
-        <h3>OICDB dataset</h3>
-        <p>Documentation du dataset, schémas des variables, format des fichiers, licence et guide de citation. Inclut des exemples de chargement en Python.</p>
-        <a class="button" href="./dataset.html" aria-label="Aller vers OICDB dataset">Explorer le dataset</a>
+        <h3>About the Project</h3>
+        <p>OICDB provides an open dataset and baseline models for integrated circuit die area estimation. The database combines multiple circuit parameters to facilitate regression-based and machine learning modeling.</p>
       </article>
 
-      <article class="card">
-        <h3>Make your own prediction</h3>
-        <p>Interface web simple pour téléverser vos features et obtenir une prédiction de la surface du die, avec les métriques du modèle et une explication globale.</p>
-        <a class="button primary" href="./predict.html" aria-label="Aller vers make your own prediction">Lancer la démo</a>
-      </article>
+
+    <!-- GROUP WISE LINEAR MODEL -->
+    <article class="card">
+      <h3>Make Your Own Prediction</h3>
+      <p>Enter the package area and type to predict the die area using our group-wise linear model.</p>
+
+      <label for="P_area"><strong>Package area (mm²):</strong></label><br>
+      <input id="P_area" type="number" step="0.01" placeholder="e.g. 12.5" style="margin:6px 0; padding:6px; width:160px;"><br>
+
+      <label for="P_type"><strong>Package type:</strong></label><br>
+      <select id="P_type" style="margin:6px 0; padding:6px; width:160px;">
+        <option value="BGA">BGA</option>
+        <option value="QFN/DFN">QFN/DFN</option>
+        <option value="QFP">QFP</option>
+        <option value="SOP/SOT">SOP/SOT</option>
+        <option value="WLP">WLP</option>
+      </select><br>
+
+      <button onclick="makeSinglePrediction()" style="margin-top:8px; padding:8px 16px; border-radius:8px; border:none; background:#103a8c; color:white; font-weight:600;">Predict</button>
+
+      <p id="predictionResult" style="margin-top:10px; font-weight:600; color:#103a8c;"></p>
+
+      <div id="packagePlot" style="width:100%; height:520px; margin-top:20px;"></div>
+      <script>
+        function makeSinglePrediction() {
+          const group_params = {
+            "BGA":     {intercept: -0.0851, slope: 0.734},
+            "QFN/DFN": {intercept: -0.669,  slope: 0.992},
+            "QFP":     {intercept: -0.141,  slope: 0.605},
+            "SOP/SOT": {intercept: -1.24,   slope: 1.14},
+            "WLP":     {intercept: -0.117,  slope: 0.986},
+          };
+
+          const P_area = parseFloat(document.getElementById("P_area").value);
+          const P_type = document.getElementById("P_type").value;
+
+          if (isNaN(P_area) || P_area <= 0) {
+            document.getElementById("predictionResult").textContent = "Please enter a valid package area.";
+            return;
+          }
+
+          const params = group_params[P_type];
+          const y_log = params.intercept + params.slope * Math.log10(P_area);
+          const prediction = Math.pow(10, y_log);
+
+          document.getElementById("predictionResult").textContent =
+            "Predicted die area: " + prediction.toFixed(3) + " mm²";
+        }
+      </script>
+
+
+      <script>
+        async function loadCSV(path) {
+          const response = await fetch(path);
+          const text = await response.text();
+          const lines = text.trim().split("\n").slice(1);
+
+          return lines.map(l => {
+            const [x, y] = l.split(",").map(Number);
+            return { x, y };
+          });
+        }
+
+        async function drawPackagePlots() {
+
+          const packages = [
+            ["BGA", "BGA"],
+            ["SOP/SOT", "SOP_SOT"],
+            ["QFN/DFN", "QFN_DFN"],
+            ["WLP", "WLP"],
+            ["QFP", "QFP"]
+          ];
+
+          const traces = [];
+          const layout = {
+            grid: { rows: 1, columns: 5, pattern: "independent" },
+            showlegend: false,
+            margin: { t: 40, l: 60, r: 20, b: 50 }
+          };
+
+          for (let i = 0; i < packages.length; i++) {
+            const [label, file] = packages[i];
+            const ax = i + 1;
+
+            const scatter = await loadCSV(`assets/data/scatter_${file}.csv`);
+            const line = await loadCSV(`assets/data/line_${file}.csv`);
+
+            traces.push({
+              x: scatter.map(p => p.x),
+              y: scatter.map(p => p.y),
+              mode: "markers",
+              marker: { size: 6, color: "rgba(31,119,180,0.6)" },
+              xaxis: "x" + ax,
+              yaxis: "y" + ax
+            });
+
+            traces.push({
+              x: line.map(p => p.x),
+              y: line.map(p => p.y),
+              mode: "lines",
+              line: { color: "black", width: 2 },
+              xaxis: "x" + ax,
+              yaxis: "y" + ax
+            });
+
+            layout["xaxis" + ax] = {
+              type: "log",
+              title: ax === 3 ? "Package area (mm²)" : ""
+            };
+
+            layout["yaxis" + ax] = {
+              type: "log",
+              title: ax === 1 ? "Die area (mm²)" : ""
+            };
+
+            layout.annotations = layout.annotations || [];
+            layout.annotations.push({
+              text: "<b>" + label + "</b>",
+              xref: "x" + ax + " domain",
+              yref: "y" + ax + " domain",
+              x: 0.5,
+              y: 1.15,
+              showarrow: false
+            });
+          }
+
+          Plotly.newPlot("packagePlot", traces, layout, { responsive: true });
+        }
+
+        drawPackagePlots();
+        </script>
+
+
+
+    </article>
+
+
     </div>
   </main>
 
+  <!-- FOOTER -->
   <footer>
     <div class="container">
-      © <span id="year"></span> OICDB. Projet universitaire. <a href="https://github.com/anncollin/DieAreaPrediction" target="_blank" rel="noopener">Code source</a>
+      © <span id="year"></span> OICDB — University Project.
+      <a href="https://github.com/anncollin/DieAreaPrediction" target="_blank" rel="noopener">Source code</a>
     </div>
   </footer>
 
