@@ -6,7 +6,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>OICDB — Modeling Integrated Circuits</title>
-  <meta name="description" content="OICDB project website: dataset and resources for modeling integrated circuits." />
+  <meta name="description" content="OSSDA project website: dataset and resources for silicon die area estimation (circuit modeling in life-cycle assessments)." />
 
   <style>
     :root {
@@ -36,7 +36,7 @@
     }
 
     .container {
-      max-width: 1100px;
+      max-width: 1600px;
       margin: 0 auto;
       padding: 0 16px;
     }
@@ -245,7 +245,7 @@
         <option value="BGA">BGA</option>
         <option value="QFN/DFN">QFN/DFN</option>
         <option value="QFP">QFP</option>
-        <option value="SOP/SOT">SOP/SOT</option>
+        <option value="SOP">SOP</option>
         <option value="WLP">WLP</option>
       </select><br>
 
@@ -253,14 +253,14 @@
 
       <p id="predictionResult" style="margin-top:10px; font-weight:600; color:#103a8c;"></p>
 
-      <div id="packagePlot" style="width:100%; height:520px; margin-top:20px;"></div>
+      <div id="packagePlot" style="width:100%; height:300px; margin-top:20px;"></div>
       <script>
         function makeSinglePrediction() {
           const group_params = {
             "BGA":     {intercept: -0.0851, slope: 0.734},
             "QFN/DFN": {intercept: -0.669,  slope: 0.992},
             "QFP":     {intercept: -0.141,  slope: 0.605},
-            "SOP/SOT": {intercept: -1.24,   slope: 1.14},
+            "SOP": {intercept: -1.24,   slope: 1.14},
             "WLP":     {intercept: -0.117,  slope: 0.986},
           };
 
@@ -276,93 +276,158 @@
           const y_log = params.intercept + params.slope * Math.log10(P_area);
           const prediction = Math.pow(10, y_log);
 
-          document.getElementById("predictionResult").textContent =
-            "Predicted die area: " + prediction.toFixed(3) + " mm²";
+          const el = document.getElementById("predictionResult");
+          el.textContent = "Predicted die area: " + prediction.toFixed(3) + " mm²";
+          el.style.color = "orange";
+
+          addPredictionPoint(P_area, prediction, P_type);
         }
       </script>
 
-
       <script>
-        async function loadCSV(path) {
-          const response = await fetch(path);
-          const text = await response.text();
-          const lines = text.trim().split("\n").slice(1);
+      /* =======================
+        CSV LOADER
+        ======================= */
+      async function loadCSV(path) {
+        const response = await fetch(path);
+        const text = await response.text();
+        const lines = text.trim().split("\n").slice(1);
 
-          return lines.map(l => {
-            const [x, y] = l.split(",").map(Number);
-            return { x, y };
+        return lines.map(l => {
+          const [x, y] = l.split(",").map(Number);
+          return { x, y };
+        });
+      }
+
+      /* =======================
+        ADD RED PREDICTION POINT
+        ======================= */
+      function addPredictionPoint(P_area, A_D, packageType) {
+
+        const packageIndex = {
+          "BGA": 0,
+          "SOP": 1,
+          "QFN/DFN": 2,
+          "WLP": 3,
+          "QFP": 4
+        };
+
+        const ax = packageIndex[packageType] + 1;
+
+        Plotly.addTraces("packagePlot", {
+          x: [P_area],
+          y: [A_D],
+          mode: "markers",
+          marker: {
+            color: "orange",
+            size: 10
+          },
+          xaxis: "x" + ax,
+          yaxis: "y" + ax
+        });
+      }
+
+      /* =======================
+        DRAW BASE PLOTS
+        ======================= */
+      async function drawPackagePlots() {
+
+        const packages = [
+          ["BGA", "BGA"],
+          ["SOP", "SOP"],
+          ["QFN/DFN", "QFN_DFN"],
+          ["WLP", "WLP"],
+          ["QFP", "QFP"]
+        ];
+
+        const traces = [];
+        const layout = {
+          grid: { rows: 1, columns: 5, pattern: "independent" },
+          showlegend: false,
+          margin: { t: 40, l: 60, r: 20, b: 50 },
+          annotations: []
+        };
+
+        for (let i = 0; i < packages.length; i++) {
+          const [label, file] = packages[i];
+          const ax = i + 1;
+
+          const scatter = await loadCSV(`assets/data/scatter_${file}.csv`);
+          const line = await loadCSV(`assets/data/line_${file}.csv`);
+
+          /* Scatter */
+          traces.push({
+            x: scatter.map(p => p.x),
+            y: scatter.map(p => p.y),
+            mode: "markers",
+            marker: { size: 6, color: "rgba(31,119,180,0.6)" },
+            xaxis: "x" + ax,
+            yaxis: "y" + ax
+          });
+
+          /* Regression line */
+          traces.push({
+            x: line.map(p => p.x),
+            y: line.map(p => p.y),
+            mode: "lines",
+            line: { color: "black", width: 2 },
+            xaxis: "x" + ax,
+            yaxis: "y" + ax
+          });
+
+          /* Axes */
+          const wlpTicks = [1, 2, 5, 10, 20];
+          const qfpTicks = [50, 100, 200, 500];
+
+          let tickvals, ticktext;
+
+          if (label === "WLP") {
+            tickvals = wlpTicks;
+            ticktext = wlpTicks.map(String);
+          } else if (label === "QFP") {
+            tickvals = qfpTicks;
+            ticktext = qfpTicks.map(String);
+          } else {
+            tickvals = [1, 10, 100, 1000];
+            ticktext = ["1", "10", "100", "1000"];
+          }
+
+          layout["xaxis" + ax] = {
+            type: "log",
+            title: ax === 3 ? "Package area (mm²)" : "",
+            constrain: "domain",
+            tickvals: tickvals,
+            ticktext: ticktext
+          };
+
+          layout["yaxis" + ax] = {
+            type: "log",
+            title: ax === 1 ? "Die area (mm²)" : "",
+            constrain: "domain",
+            range: [Math.log10(0.05), Math.log10(1000)],
+            tickvals: [0.1, 1, 10, 100, 1000],
+            ticktext: ["0.1", "1", "10", "100", "1000"]
+          };
+
+          /* Title */
+          layout.annotations.push({
+            text: "<b>" + label + "</b>",
+            xref: "x" + ax + " domain",
+            yref: "y" + ax + " domain",
+            x: 0.5,
+            y: 1.15,
+            showarrow: false
           });
         }
 
-        async function drawPackagePlots() {
+        Plotly.newPlot("packagePlot", traces, layout, { responsive: true });
+      }
 
-          const packages = [
-            ["BGA", "BGA"],
-            ["SOP/SOT", "SOP_SOT"],
-            ["QFN/DFN", "QFN_DFN"],
-            ["WLP", "WLP"],
-            ["QFP", "QFP"]
-          ];
-
-          const traces = [];
-          const layout = {
-            grid: { rows: 1, columns: 5, pattern: "independent" },
-            showlegend: false,
-            margin: { t: 40, l: 60, r: 20, b: 50 }
-          };
-
-          for (let i = 0; i < packages.length; i++) {
-            const [label, file] = packages[i];
-            const ax = i + 1;
-
-            const scatter = await loadCSV(`assets/data/scatter_${file}.csv`);
-            const line = await loadCSV(`assets/data/line_${file}.csv`);
-
-            traces.push({
-              x: scatter.map(p => p.x),
-              y: scatter.map(p => p.y),
-              mode: "markers",
-              marker: { size: 6, color: "rgba(31,119,180,0.6)" },
-              xaxis: "x" + ax,
-              yaxis: "y" + ax
-            });
-
-            traces.push({
-              x: line.map(p => p.x),
-              y: line.map(p => p.y),
-              mode: "lines",
-              line: { color: "black", width: 2 },
-              xaxis: "x" + ax,
-              yaxis: "y" + ax
-            });
-
-            layout["xaxis" + ax] = {
-              type: "log",
-              title: ax === 3 ? "Package area (mm²)" : ""
-            };
-
-            layout["yaxis" + ax] = {
-              type: "log",
-              title: ax === 1 ? "Die area (mm²)" : ""
-            };
-
-            layout.annotations = layout.annotations || [];
-            layout.annotations.push({
-              text: "<b>" + label + "</b>",
-              xref: "x" + ax + " domain",
-              yref: "y" + ax + " domain",
-              x: 0.5,
-              y: 1.15,
-              showarrow: false
-            });
-          }
-
-          Plotly.newPlot("packagePlot", traces, layout, { responsive: true });
-        }
-
-        drawPackagePlots();
-        </script>
-
+      /* =======================
+        INIT
+        ======================= */
+      drawPackagePlots();
+      </script>
 
 
     </article>
