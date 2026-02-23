@@ -230,7 +230,30 @@
     <div class="row">
       <article class="card">
         <h3>About the Project</h3>
-        <p>OSSDA provides an open dataset and baseline models for integrated circuit die area estimation. The database combines multiple circuit parameters to facilitate regression-based and machine learning modeling.</p>
+        <p>
+          OSSDA is built on a dataset that we collected ourselves through chemical decapping and silicon die exposure of 639 integrated circuits across 25 ICT devices. 
+          For each IC, we measured the die area and linked it to package characteristics such as package area, package type, pin count, and mass.
+        </p>
+        <p>
+          Using a classical machine learning workflow with train/test split and 15-fold cross-validation, we compared six regression architectures, including linear regression, group-wise linear regression, support vector regression, multi-layer perceptron, k-nearest neighbors, and decision trees.
+        </p>
+        <p>
+          The recommended model is a log–log group-wise linear regression depending on package area and package type. 
+          In logarithmic space, it fits:
+        </p>
+        <p style="text-align:center; font-weight:600;">
+          log<sub>10</sub>(Â<sub>D</sub>) = β · log<sub>10</sub>(A<sub>P</sub>) + α
+        </p>
+        <p>
+          where the coefficients α and β depend on the package type. 
+          In the original domain, this corresponds to:
+        </p>
+        <p style="text-align:center; font-weight:600;">
+          Â<sub>D</sub> = a · A<sub>P</sub><sup>β</sup>, &nbsp; with &nbsp; a = 10<sup>α</sup>
+        </p>
+        <p>
+          Compared to fixed die-to-package conversion factors, this model reduces the typical multiplicative prediction error from about ×3 to ×1.9 while maintaining interpretability and reducing systematic bias across IC sizes.
+        </p>
       </article>
 
 
