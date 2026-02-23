@@ -230,29 +230,42 @@
     <div class="row">
       <article class="card">
         <h3>About the Project</h3>
+
         <p>
           OSSDA is built on a dataset that we collected ourselves through chemical decapping and silicon die exposure of 639 integrated circuits across 25 ICT devices. 
-          For each IC, we measured the die area and linked it to package characteristics such as package area, package type, pin count, and mass.
+          For each IC, we measured the silicon die area and linked it to package characteristics such as package area, package type, pin count, and mass.
         </p>
+
         <p>
-          Using a classical machine learning workflow with train/test split and 15-fold cross-validation, we compared six regression architectures, including linear regression, group-wise linear regression, support vector regression, multi-layer perceptron, k-nearest neighbors, and decision trees.
+          Using a classical machine learning workflow with a train/test split and 15-fold cross-validation, we compared six regression architectures: linear regression, group-wise linear regression, support vector regression, multi-layer perceptron, k-nearest neighbors, and decision trees.
         </p>
+
         <p>
           The recommended model is a log–log group-wise linear regression depending on package area and package type. 
           In logarithmic space, it fits:
         </p>
+
         <p style="text-align:center; font-weight:600;">
-          log<sub>10</sub>(Â<sub>D</sub>) = β · log<sub>10</sub>(A<sub>P</sub>) + α
+          log<sub>10</sub>(Â<sub>Die</sub>) = β · log<sub>10</sub>(A<sub>Pack</sub>) + α
         </p>
+
         <p>
-          where the coefficients α and β depend on the package type. 
+          where:
+          Â<sub>Die</sub> is the predicted silicon die area (in mm²),  
+          A<sub>Pack</sub> is the measured package area (in mm²),  
+          and the coefficients α and β depend on the package type.
+        </p>
+
+        <p>
           In the original domain, this corresponds to:
         </p>
+
         <p style="text-align:center; font-weight:600;">
-          Â<sub>D</sub> = a · A<sub>P</sub><sup>β</sup>, &nbsp; with &nbsp; a = 10<sup>α</sup>
+          Â<sub>Die</sub> = a · A<sub>Pack</sub><sup>β</sup>, &nbsp; with &nbsp; a = 10<sup>α</sup>
         </p>
+
         <p>
-          Compared to fixed die-to-package conversion factors, this model reduces the typical multiplicative prediction error from about ×3 to ×1.9 while maintaining interpretability and reducing systematic bias across IC sizes.
+          Compared to fixed die-to-package conversion factors, this model reduces the typical multiplicative prediction error from about 3× to 1.9× while maintaining interpretability and reducing systematic bias across IC sizes.
         </p>
       </article>
 
